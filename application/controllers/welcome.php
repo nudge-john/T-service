@@ -20,7 +20,24 @@ class Welcome extends CI_Controller {
 	public function index()
 	{
 		$this->load->view('welcome_message');
+		// $datas = $this->curl->simple_get('https://apis.daum.net/local/geo/coord2addr?apikey=5725fdfd188424108c5a02899bf5fcea&longitude=127.10863694633468&latitude=37.40209529907863&inputCoordSystem=WGS84&output=json');
+		// log_message('error','[DEBUG] Curl => '.print_r($datas,true));
 	}
+
+	// public function getAddress()
+	// {
+		
+	// 	log_message('error','Long =>');	
+	// 	// $longitude = $this->input->post('longitude');
+	// 	// $latitude = $this->input->post('latitude');
+
+	// 	// log_message('error','Long =>'.$longitude);
+
+	// 	// $datas = $this->curl->simple_get('https://apis.daum.net/local/geo/coord2addr?apikey=5725fdfd188424108c5a02899bf5fcea&longitude=127.10863694633468&latitude=37.40209529907863&inputCoordSystem=WGS84&output=json');
+	// 	// log_message('error','[DEBUG] Curl => '.print_r($datas,true));
+
+	// 	//$this->output->set_content_type('application/json')->set_output(json_encode($datas));
+	// }
 }
 
 /* End of file welcome.php */

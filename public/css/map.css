@@ -1,0 +1,73 @@
+body {
+	background: rgb(237, 237, 236);
+	font: 16px/20px "Helvetica Neue", Helvetica, sans-serif;
+	margin: 40px 0px 0px;
+	padding: 0px;
+	font-size-adjust: none;
+	font-stretch: normal;
+}
+section {
+	display: block;
+}
+header {
+	display: block;
+}
+footer {
+	display: block;
+}
+
+/*컨텐츠를 전체적으로 감싸는 영역의 스타일을 적용합니다.*/
+#wrapper {
+	background: margin : 0px auto;
+	border-radius: 10px;
+	width: 600px;
+	padding-bottom: 76px;
+	border-top-color: rgb(255, 255, 255);
+	border-top-width: 1px;
+	border-top-style: solid;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+}
+h1 {
+	padding-top: 10px;
+}
+h2 {
+	font-size: 100%;
+	font-style: italic;
+}
+header {
+	margin: 20px;
+}
+article > * {
+	margin: 20px;
+}
+footer > * {
+	margin: 20px;
+}
+footer > * {
+	margin: 20px;
+	color: rgb(153, 153, 153);
+}
+
+/*일반 상태의 스타일입니다.*/
+#status {
+	background: rgb(204, 204, 204);
+	padding: 5px;
+	color: rgb(255, 255, 255);
+}
+/*실패 상태의 스타일입니다.*/
+.fail#status {
+	background: rgb(204, 0, 0);
+}
+/*성공 상태의 스타일입니다.*/
+.success#status {
+	background: rgb(0, 204, 0);
+}
+/*오프라인 상태의 스타일입니다.*/
+.offline#status {
+	background: rgb(204, 0, 0);
+}
+/*온라인 상태의 스타일입니다.*/
+.online#status {
+	background: rgb(0, 204, 0);
+}
