@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>지도 API</title>
+  <meta charset="utf-8">
+  <title>지도 API</title>
 </head>
 <style type="text/css">
 #menu {
@@ -23,7 +23,7 @@ html, body {width:100%;height:100%;margin:0;padding:0;}
 .custom_zoomcontrol span:first-child{border-bottom:1px solid #bfbfbf;}      
 </style>
 <body>
-	<div class="map_wrap">
+  <div class="map_wrap">
         <div id="mapArea" style="width:750px;height:450px;"></div>
         <!-- 지도 확대, 축소 컨트롤 div 입니다 -->
         <div class="custom_zoomcontrol radius_border"> 
@@ -32,9 +32,9 @@ html, body {width:100%;height:100%;margin:0;padding:0;}
         </div>
     </div>
 
-	<div id="menu">
-		<h3>Menu</h3>
-	</div>
+  <div id="menu">
+    <h3>Menu</h3>
+  </div>
 
     <div id="clickLatlng"></div>
 
@@ -44,6 +44,8 @@ html, body {width:100%;height:100%;margin:0;padding:0;}
 <!-- <script src="./public/js/bootstrap.min.js"></script>     -->
 <script>
 
+var key = '5725fdfd188424108c5a02899bf5fcea';
+var addreFullname = '';
 
 var mapContainer = document.getElementById('mapArea'), // 지도를 표시할 div 
     mapOption = { 
@@ -61,13 +63,23 @@ if (navigator.geolocation) {
         
         var lat = position.coords.latitude, // 위도
             lon = position.coords.longitude; // 경도
+
+        data = {
+            longitude : lon,
+            latitude : lat
+        }       
+
+        $.post('/index.php/map/getAddress',data,function(json){
+            var addreObj = jQuery.parseJSON( json['datas'] );
+            addreFullname = addreObj.fullName;
+
+            // console.log(addreFullname);
+            var locPosition = new daum.maps.LatLng(lat, lon), // 마커가 표시될 위치를 geolocation으로 얻어온 좌표로 생성합니다
+            message = '<div style="padding:5px;">'+addreFullname+'&nbsp;&nbsp;&nbsp;&nbsp; </div>'; // 인포윈도우에 표시될 내용입니다
         
-        var locPosition = new daum.maps.LatLng(lat, lon), // 마커가 표시될 위치를 geolocation으로 얻어온 좌표로 생성합니다
-            message = '<div style="padding:5px;">여기에 계신가요?!</div>'; // 인포윈도우에 표시될 내용입니다
-        
-        // 마커와 인포윈도우를 표시합니다
-        displayMarker(locPosition, message);
-            
+            // 마커와 인포윈도우를 표시합니다
+            displayMarker(locPosition, message);
+        });            
       });
     
 } else { // HTML5의 GeoLocation을 사용할 수 없을때 마커 표시 위치와 인포윈도우 내용을 설정합니다
@@ -153,7 +165,6 @@ var marker = new daum.maps.Marker({
 // 지도에 마커를 표시합니다
 marker.setMap(map);
 
-
 // 지도에 클릭 이벤트를 등록합니다
 // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
 daum.maps.event.addListener(map, 'click', function(mouseEvent) {        
@@ -163,48 +174,26 @@ daum.maps.event.addListener(map, 'click', function(mouseEvent) {
     
     // 마커 위치를 클릭한 위치로 옮깁니다
     marker.setPosition(latlng);
+
+    // data = {
+    //         longitude : latlng.getLng(),
+    //         latitude : latlng.getLat()
+    // }    
+
+    // $.post('/index.php/map/getAddress',data,function(json){
+    //     var addreObj = jQuery.parseJSON( json['datas'] );
+    //     addreFullname = addreObj.fullName;
+
+    //     console.log(addreFullname);
+    // });
     
     var message = '클릭한 위치의 위도는 ' + latlng.getLat() + ' 이고, ';
     message += '경도는 ' + latlng.getLng() + ' 입니다';
-    
-    var key = '5725fdfd188424108c5a02899bf5fcea';
-
-    data = {
-        longitude : latlng.getLng(),
-        latitude : latlng.getLat()
-    }    
-
-    $.post('/index.php/map/getAddress',data,function(json){
-        console.log(json["datas"]["fullName"]);
-    });
     
     var resultDiv = document.getElementById('clickLatlng'); 
     resultDiv.innerHTML = message;
     
 });
-
-// $.ajax(
-// {
-//   type:'post',
-//   url:'/index.php/map/getAddress',
-//   dataType:'json',
-//   success:function(json){   
-//     // if(json['status'])
-//     // {
-//     //   window.location.replace('/');
-//     // }
-//     // else
-//     // {
-//     //   alert(json['error']['message']);
-//     // }
-//   },
-//   error:function(e){  
-//     alert(e.responseText); 
-//   }  
-// });
-
-
-
 
 
 </script>
