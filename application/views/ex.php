@@ -1,201 +1,234 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>지도 API</title>
-</head>
-<style type="text/css">
-#menu {
-  position: absolute;
-  top: 13px;
-  left: 12px;
-  width: 254px;
-  z-index: 10;
-}
+<div class="map_wrap">
+    <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
 
-html, body {width:100%;height:100%;margin:0;padding:0;} 
-.map_wrap {position:relative;overflow:hidden;width:100%;height:350px;}
-.radius_border{border:1px solid #919191;border-radius:5px;}      
-
-.custom_zoomcontrol {position:absolute;top:50px;left:700px;width:36px;height:80px;overflow:hidden;z-index:1;background-color:#f5f5f5;} 
-.custom_zoomcontrol span {display:block;width:36px;height:40px;text-align:center;cursor:pointer;}     
-.custom_zoomcontrol span img {width:15px;height:15px;padding:12px 0;border:none;}             
-.custom_zoomcontrol span:first-child{border-bottom:1px solid #bfbfbf;}      
-</style>
-<body>
-  <div class="map_wrap">
-        <div id="mapArea" style="width:750px;height:450px;"></div>
-        <!-- 지도 확대, 축소 컨트롤 div 입니다 -->
-        <div class="custom_zoomcontrol radius_border"> 
-            <span onclick="zoomIn()"><img src="http://i1.daumcdn.net/localimg/localimages/07/mapapidoc/ico_plus.png" alt="확대"></span>  
-            <span onclick="zoomOut()"><img src="http://i1.daumcdn.net/localimg/localimages/07/mapapidoc/ico_minus.png" alt="축소"></span>
+    <div id="menu_wrap" class="bg_white">
+        <div class="option">
+            <p>
+                <form onsubmit="searchPlaces(); return false;">
+                키워드 : <input type="text" value="이태원 맛집" id="keyword" size="15"> 
+                <button type="submit">검색하기</button> 
+            </p>
         </div>
+        <hr>
+        <ul id="placesList"></ul>
+        <div id="pagination"></div>
     </div>
-
-  <div id="menu">
-    <h3>Menu</h3>
-  </div>
-
-    <div id="clickLatlng"></div>
-
-<script src="//apis.daum.net/maps/maps3.js?apikey=5725fdfd188424108c5a02899bf5fcea"></script>
-<!-- <script src="./public/js/jquery-1.8.0.js"></script> -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<!-- <script src="./public/js/bootstrap.min.js"></script>     -->
+</div>
 <script>
+// 마커를 담을 배열입니다
+var markers = [];
 
-var key = '5725fdfd188424108c5a02899bf5fcea';
-var addreFullname = '';
+var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = {
+        center: new daum.maps.LatLng(37.537187, 127.005476), // 지도의 중심좌표
+        level: 3 // 지도의 확대 레벨
+    };  
 
-var mapContainer = document.getElementById('mapArea'), // 지도를 표시할 div 
-    mapOption = { 
-        center: new daum.maps.LatLng(0, 0), // 지도의 중심좌표
-        level: 2 // 지도의 확대 레벨 
-    };
+// 지도를 생성합니다    
+var map = new daum.maps.Map(mapContainer, mapOption); 
 
-var map = new daum.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+// 장소 검색 객체를 생성합니다
+var ps = new daum.maps.services.Places();  
 
-// HTML5의 geolocation으로 사용할 수 있는지 확인합니다 
-if (navigator.geolocation) {
-    
-    // GeoLocation을 이용해서 접속 위치를 얻어옵니다
-    navigator.geolocation.getCurrentPosition(function(position) {
-        
-        var lat = position.coords.latitude, // 위도
-            lon = position.coords.longitude; // 경도
+// 검색 결과 목록이나 마커를 클릭했을 때 장소명을 표출할 인포윈도우를 생성합니다
+var infowindow = new daum.maps.InfoWindow({zIndex:1});
 
-        data = {
-            longitude : lon,
-            latitude : lat
-        }       
+// 키워드로 장소를 검색합니다
+searchPlaces();
 
-        $.post('/index.php/map/getAddress',data,function(json){
-            var addreObj = jQuery.parseJSON( json['datas'] );
-            addreFullname = addreObj.fullName;
+// 키워드 검색을 요청하는 함수입니다
+function searchPlaces() {
 
-            // console.log(addreFullname);
-            var locPosition = new daum.maps.LatLng(lat, lon), // 마커가 표시될 위치를 geolocation으로 얻어온 좌표로 생성합니다
-            message = '<div style="padding:5px;">'+addreFullname+'&nbsp;&nbsp;&nbsp;&nbsp; </div>'; // 인포윈도우에 표시될 내용입니다
-        
-            // 마커와 인포윈도우를 표시합니다
-            displayMarker(locPosition, message);
-        });            
-      });
-    
-} else { // HTML5의 GeoLocation을 사용할 수 없을때 마커 표시 위치와 인포윈도우 내용을 설정합니다
-    
-    var locPosition = new daum.maps.LatLng(33.450701, 126.570667),    
-        message = 'geolocation을 사용할수 없어요..'
-        
-    displayMarker(locPosition, message);
+    var keyword = document.getElementById('keyword').value;
+
+    if (!keyword.replace(/^\s+|\s+$/g, '')) {
+        alert('키워드를 입력해주세요!');
+        return false;
+    }
+
+    // 장소검색 객체를 통해 키워드로 장소검색을 요청합니다
+    ps.keywordSearch( keyword, placesSearchCB); 
 }
 
-// 지도에 마커와 인포윈도우를 표시하는 함수입니다
-function displayMarker(locPosition, message) {
+// 장소검색이 완료됐을 때 호출되는 콜백함수 입니다
+function placesSearchCB(status, data, pagination) {
+    if (status === daum.maps.services.Status.OK) {
 
-    // 마커 이미지의 주소
-    var markerImageUrl = 'http://i1.daumcdn.net/localimg/localimages/07/2012/img/marker_p.png', 
-        markerImageSize = new daum.maps.Size(40, 42), // 마커 이미지의 크기
-        markerImageOptions = { 
-            offset : new daum.maps.Point(20, 42)// 마커 좌표에 일치시킬 이미지 안의 좌표
-        };
+        // 정상적으로 검색이 완료됐으면
+        // 검색 목록과 마커를 표출합니다
+        displayPlaces(data.places);
 
-    // 마커 이미지를 생성한다
-    var markerImage = new daum.maps.MarkerImage(markerImageUrl, markerImageSize, markerImageOptions);
+        // 페이지 번호를 표출합니다
+        displayPagination(pagination);
 
-    // 마커를 생성합니다
-    var marker = new daum.maps.Marker({  
-        map: map, 
-        draggable : true, // 마커를 드래그 가능하도록 설정한다
-        image : markerImage, // 마커의 이미지
-        position: locPosition
+    } else if (status === daum.maps.services.Status.ZERO_RESULT) {
 
-    }); 
+        alert('검색 결과가 존재하지 않습니다.');
+        return;
+
+    } else if (status === daum.maps.services.Status.ERROR) {
+
+        alert('검색 결과 중 오류가 발생했습니다.');
+        return;
+
+    }
+}
+
+// 검색 결과 목록과 마커를 표출하는 함수입니다
+function displayPlaces(places) {
+
+    var listEl = document.getElementById('placesList'), 
+    menuEl = document.getElementById('menu_wrap'),
+    fragment = document.createDocumentFragment(), 
+    bounds = new daum.maps.LatLngBounds(), 
+    listStr = '';
     
-    var iwContent = message, // 인포윈도우에 표시할 내용
-        iwRemoveable = true;
+    // 검색 결과 목록에 추가된 항목들을 제거합니다
+    removeAllChildNods(listEl);
 
-    // 인포윈도우를 생성합니다
-    var infowindow = new daum.maps.InfoWindow({
-        content : iwContent,
-        removable : iwRemoveable
-    });
+    // 지도에 표시되고 있는 마커를 제거합니다
+    removeMarker();
     
-    // 인포윈도우를 마커위에 표시합니다 
+    for ( var i=0; i<places.length; i++ ) {
+
+        // 마커를 생성하고 지도에 표시합니다
+        var placePosition = new daum.maps.LatLng(places[i].latitude, places[i].longitude),
+            marker = addMarker(placePosition, i), 
+            itemEl = getListItem(i, places[i], marker); // 검색 결과 항목 Element를 생성합니다
+
+        // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
+        // LatLngBounds 객체에 좌표를 추가합니다
+        bounds.extend(placePosition);
+
+        // 마커와 검색결과 항목에 mouseover 했을때
+        // 해당 장소에 인포윈도우에 장소명을 표시합니다
+        // mouseout 했을 때는 인포윈도우를 닫습니다
+        (function(marker, title) {
+            daum.maps.event.addListener(marker, 'mouseover', function() {
+                displayInfowindow(marker, title);
+            });
+
+            daum.maps.event.addListener(marker, 'mouseout', function() {
+                infowindow.close();
+            });
+
+            itemEl.onmouseover =  function () {
+                displayInfowindow(marker, title);
+            };
+
+            itemEl.onmouseout =  function () {
+                infowindow.close();
+            };
+        })(marker, places[i].title);
+
+        fragment.appendChild(itemEl);
+    }
+
+    // 검색결과 항목들을 검색결과 목록 Elemnet에 추가합니다
+    listEl.appendChild(fragment);
+    menuEl.scrollTop = 0;
+
+    // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
+    map.setBounds(bounds);
+}
+
+// 검색결과 항목을 Element로 반환하는 함수입니다
+function getListItem(index, places) {
+
+    var el = document.createElement('li'),
+    itemStr = '<span class="markerbg marker_' + (index+1) + '"></span>' +
+                '<div class="info">' +
+                '   <h5>' + places.title + '</h5>';
+
+    if (places.newAddress) {
+        itemStr += '    <span>' + places.newAddress + '</span>' +
+                    '   <span class="jibun gray">' +  places.address  + '</span>';
+    } else {
+        itemStr += '    <span>' +  places.address  + '</span>'; 
+    }
+                 
+      itemStr += '  <span class="tel">' + places.phone  + '</span>' +
+                '</div>';           
+
+    el.innerHTML = itemStr;
+    el.className = 'item';
+
+    return el;
+}
+
+// 마커를 생성하고 지도 위에 마커를 표시하는 함수입니다
+function addMarker(position, idx, title) {
+    var imageSrc = 'http://i1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
+        imageSize = new daum.maps.Size(36, 37),  // 마커 이미지의 크기
+        imgOptions =  {
+            spriteSize : new daum.maps.Size(36, 691), // 스프라이트 이미지의 크기
+            spriteOrigin : new daum.maps.Point(0, (idx*46)+10), // 스프라이트 이미지 중 사용할 영역의 좌상단 좌표
+            offset: new daum.maps.Point(13, 37) // 마커 좌표에 일치시킬 이미지 내에서의 좌표
+        },
+        markerImage = new daum.maps.MarkerImage(imageSrc, imageSize, imgOptions),
+            marker = new daum.maps.Marker({
+            position: position, // 마커의 위치
+            image: markerImage 
+        });
+
+    marker.setMap(map); // 지도 위에 마커를 표출합니다
+    markers.push(marker);  // 배열에 생성된 마커를 추가합니다
+
+    return marker;
+}
+
+// 지도 위에 표시되고 있는 마커를 모두 제거합니다
+function removeMarker() {
+    for ( var i = 0; i < markers.length; i++ ) {
+        markers[i].setMap(null);
+    }   
+    markers = [];
+}
+
+// 검색결과 목록 하단에 페이지번호를 표시는 함수입니다
+function displayPagination(pagination) {
+    var paginationEl = document.getElementById('pagination'),
+        fragment = document.createDocumentFragment(),
+        i; 
+
+    // 기존에 추가된 페이지번호를 삭제합니다
+    while (paginationEl.hasChildNodes()) {
+        paginationEl.removeChild (paginationEl.lastChild);
+    }
+
+    for (i=1; i<=pagination.last; i++) {
+        var el = document.createElement('a');
+        el.href = "#";
+        el.innerHTML = i;
+
+        if (i===pagination.current) {
+            el.className = 'on';
+        } else {
+            el.onclick = (function(i) {
+                return function() {
+                    pagination.gotoPage(i);
+                }
+            })(i);
+        }
+
+        fragment.appendChild(el);
+    }
+    paginationEl.appendChild(fragment);
+}
+
+// 검색결과 목록 또는 마커를 클릭했을 때 호출되는 함수입니다
+// 인포윈도우에 장소명을 표시합니다
+function displayInfowindow(marker, title) {
+    var content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
+
+    infowindow.setContent(content);
     infowindow.open(map, marker);
-    
-    // 지도 중심좌표를 접속위치로 변경합니다
-    map.setCenter(locPosition);      
 }
 
-// 기타 기능 추가
-
-// // 지도에 확대 축소 컨트롤을 생성한다
-// var zoomControl = new daum.maps.ZoomControl();
-
-// // 지도의 우측에 확대 축소 컨트롤을 추가한다
-// map.addControl(zoomControl, daum.maps.ControlPosition.RIGHT);
-
-
-// 지도 타입 변경 컨트롤을 생성한다
-var mapTypeControl = new daum.maps.MapTypeControl();
-
-// 지도의 상단 우측에 지도 타입 변경 컨트롤을 추가한다
-map.addControl(mapTypeControl, daum.maps.ControlPosition.TOPRIGHT); 
-
-// 실시간교통 타일 이미지 추가
-map.addOverlayMapTypeId(daum.maps.MapTypeId.TRAFFIC); 
-
-// 지도 확대, 축소 컨트롤에서 확대 버튼을 누르면 호출되어 지도를 확대하는 함수입니다
-function zoomIn() {
-    map.setLevel(map.getLevel() - 1);
+ // 검색결과 목록의 자식 Element를 제거하는 함수입니다
+function removeAllChildNods(el) {   
+    while (el.hasChildNodes()) {
+        el.removeChild (el.lastChild);
+    }
 }
-
-// 지도 확대, 축소 컨트롤에서 축소 버튼을 누르면 호출되어 지도를 확대하는 함수입니다
-function zoomOut() {
-    map.setLevel(map.getLevel() + 1);
-}
-
-
-// 지도를 클릭한 위치에 표출할 마커입니다
-var marker = new daum.maps.Marker({ 
-    // 지도 중심좌표에 마커를 생성합니다 
-    position: map.getCenter() 
-}); 
-// 지도에 마커를 표시합니다
-marker.setMap(map);
-
-// 지도에 클릭 이벤트를 등록합니다
-// 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
-daum.maps.event.addListener(map, 'click', function(mouseEvent) {        
-    
-    // 클릭한 위도, 경도 정보를 가져옵니다 
-    var latlng = mouseEvent.latLng; 
-    
-    // 마커 위치를 클릭한 위치로 옮깁니다
-    marker.setPosition(latlng);
-
-    // data = {
-    //         longitude : latlng.getLng(),
-    //         latitude : latlng.getLat()
-    // }    
-
-    // $.post('/index.php/map/getAddress',data,function(json){
-    //     var addreObj = jQuery.parseJSON( json['datas'] );
-    //     addreFullname = addreObj.fullName;
-
-    //     console.log(addreFullname);
-    // });
-    
-    var message = '클릭한 위치의 위도는 ' + latlng.getLat() + ' 이고, ';
-    message += '경도는 ' + latlng.getLng() + ' 입니다';
-    
-    var resultDiv = document.getElementById('clickLatlng'); 
-    resultDiv.innerHTML = message;
-    
-});
-
-
 </script>
-</body>
-</html>

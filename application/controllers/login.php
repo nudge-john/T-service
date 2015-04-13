@@ -5,7 +5,7 @@ class Login extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
-		
+
 		// Load models
 		$this->load->model('user_model','user');
 	}
@@ -25,7 +25,7 @@ class Login extends CI_Controller {
 		$this->load->view('nav',$public);
 		$this->load->view('login_view');
 		
-		$this->load->view('js',$public); // Javascript.		
+		//$this->load->view('js',$public); // Javascript.		
 		$this->load->view('footer');
 	}
 
@@ -123,6 +123,3 @@ class Login extends CI_Controller {
 		redirect('/');		
 	}	
 }
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */

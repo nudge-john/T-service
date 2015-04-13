@@ -7,7 +7,7 @@
 
 		<div class="col-md-12" style="margin-top:100px;">
 			<div class="col-md-6">
-				<h1><a href="/index.php/itme">It's me</a></h1>
+				<h1><a href="/isme">It's me</a></h1>
 			</div>
 
 			<div class="col-md-6">

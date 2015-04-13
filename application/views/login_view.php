@@ -33,7 +33,9 @@
 
 	</div> <!-- /container -->
 </div> <!-- wrap end. -->
-<script>
+
+<script type="text/javascript">
+
 var response = '';
 var accessToken = '';
 var userFbImage = '';
@@ -144,9 +146,6 @@ function fbLogOut(){
   	});
 }
 
-/** Input Login Jquery **/
-
-
 $("#signIn").click(function(e){	
 	e.preventDefault();
 	
@@ -173,8 +172,7 @@ $("#signIn").click(function(e){
             	}
         	}	
           	else
-          	{
-            	alert('<?php echo lang("error_4"); ?>');
+          	{            	
             	$('input#password2').val('');
             	$('input#password2').focus();          
           	}
@@ -186,5 +184,6 @@ $("#signIn").click(function(e){
     });
 
 });
+
 
 </script>

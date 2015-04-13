@@ -24,7 +24,7 @@
     <!-- 아이폰 배경화면 아이콘 추가 -->
     <!-- <link rel="apple-touch-icon" href="/images/iphone-icon.png">  -->
 
-    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>    
     <script src="/public/js/bootstrap.js"></script>
 </head>
 

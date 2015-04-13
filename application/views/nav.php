@@ -16,7 +16,7 @@
         		<li><a href="#">About Us <span class="sr-only">(current)</span></a></li>    			
     			 <li><a href="#">How it Works</a></li>
     			<?php if($this->session->userdata('state')){ ?>		
-				<li id="login" ><a class="pointer" id="logout">LOG OUT</a></li>
+				<li id="login" ><a class="pointer" href="/login/sign_out">LOG OUT</a></li>
 				<?php }else{ ?>
 				<li id="login" ><a href="/login">LOG IN</a></li>
 				<?php } ?>
