@@ -1,17 +1,16 @@
-<script type="text/javascript">
 var ballCurve, ballMargin, ballSize, cols, rows, startDelta, _i, _results;
 
-rows = 4;
+rows = 15;
 
 cols = 4;
 
-ballSize = 100;
+ballSize = 120;
 
 ballMargin = 40;
 
-ballCurve = "spring(300,20,0)";
+ballCurve = "spring(600,20,10)";
 
-startDelta = 200;
+startDelta = 100;
 
 (function() {
   _results = [];
@@ -32,25 +31,31 @@ startDelta = 200;
       height: ballSize,
       opacity: 0
     });
-    R1 = 240 / cols * a;
-    G1 = 220 / rows * b;
-    B1 = 200;
+    // R1 = 240 / cols * a;
+    // G1 = 220 / rows * b;
+    // B1 = 200;
+    R1 = 255;
+    G1 = 167;
+    B1 = 167;
+
     ball.style = {
       backgroundColor: "rgba(" + R1 + "," + G1 + "," + B1 + ",1)",
-      borderRadius: "50%",
-      border: "4px solid white",
+      borderRadius: "0%",
+      border: "10px solid red",
       lineHeight: ball.height - 5 + "px"
     };
-    ball.html = "" + a + ", " + b;
+    
+    ball.html = "Go John";
     ball.states.add('fadein', {
       y: a * (ballSize + ballMargin),
       opacity: 1
     });
+    
     ball.states.animationOptions = {
       curve: ballCurve
     };
+    
     ball.states.animationOptions.delay = 0.05 * a + 0.05 * b;
     return ball.states["switch"]('fadein');
   });
 });
-</script>

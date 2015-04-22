@@ -9,8 +9,8 @@
 
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active"><a href="#start" aria-controls="home" role="tab" data-toggle="tab">출 발 지</a></li>
-                    <li role="presentation"><a href="#arrival" aria-controls="profile" role="tab" data-toggle="tab">도 착 지</a></li>
+                    <li role="presentation" class="active"><a href="#start" id="startTab" aria-controls="home" role="tab" data-toggle="tab">출 발 지</a></li>
+                    <li role="presentation"><a href="#arrival" id="arrivalTab" aria-controls="profile" role="tab" data-toggle="tab">도 착 지</a></li>
                 
                 </ul>
 
@@ -26,7 +26,7 @@
                             
                             <div class="form-group">
                                <label for="memoInput">주변건물</label>
-                                <input class="form-control" id="memoInput" placeholder="참조 : 합정역 5번출">
+                                <input class="form-control" id="memoInput" placeholder="참조 : 합정역 5번출구">
                             </div>  
 
                             <textarea class="form-control textarea_noresize" rows="3" placeholder="자신을 찾을수 있는 메모를 남겨 주세요."></textarea>
@@ -50,21 +50,24 @@
                             <div id="pagination"></div>
                         </div>
 
+                        
+
+
                     </div>
                     <!-- Arrival end. -->
                 </div>
                 <!-- Tab panes end. -->
-                <button type="submit" class="btn btn-primary btn-block mt15" >Submit</button>
+                <button class="btn btn-primary btn-block mt15" >Submit</button>
 
             </div>            
 
         </div>
 
         <!-- Map -->
-        <div class="col-md-9">
+        <div class="col-md-9" id="mapArea">
             <div class="map_wrap">
                 <div class="map-style pull-right" id="map"></div>
-                <div id="centerAddr"></div>            
+                <!-- <div id="centerAddr"></div> -->
 
                 <div id="menu">
                     <h3>Menu</h3>
@@ -72,6 +75,15 @@
                         <span class="glyphicon glyphicon-screenshot" aria-hidden="true"></span>                    
                     </button>
                 </div>
+            </div>
+        </div>
+        <!-- Map end. -->
+
+        <!-- Map -->
+        <div class="col-md-9" id="mapAreaArrival">
+            <div class="map_wrap">
+                <div class="map-style pull-right" id="mapSearch"></div>
+                <!-- <div id="centerAddr"></div> -->
             </div>
         </div>
         <!-- Map end. -->

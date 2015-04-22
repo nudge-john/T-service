@@ -18,7 +18,7 @@
     			<?php if($this->session->userdata('state')){ ?>		
 				<li id="login" ><a class="pointer" href="/login/sign_out">LOG OUT</a></li>
 				<?php }else{ ?>
-				<li id="login" ><a href="/login">LOG IN</a></li>
+				<li id="login" ><a href="/login" class="animsition-link" data-animsition-out="fade-out-right" data-animsition-out-duration="700">LOG IN</a></li>
 				<?php } ?>
       		</ul>
     	</div> <!-- nav-collapse -->
