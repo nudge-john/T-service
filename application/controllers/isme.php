@@ -28,20 +28,4 @@ class Isme extends CI_Controller {
 			redirect('/login');
 		}
 	}
-
-	// public function setlatlon()
-	// {
-	// 	$json['result'] = true;
-	// 	$lat = $this->input->post('lat');
-	// 	$lon = $this->input->post('lon');
-
-	// 	$data = array('lat' => $lat, 'lon' => $lon);
-	// 	$this->session->set_userdata($data);
-
-	// 	if(empty($lat) && empty($lon))
-	// 	{
-	// 		$json['result'] = false;
-	// 	}
-
-
 }
