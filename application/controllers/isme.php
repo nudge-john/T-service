@@ -5,9 +5,6 @@ class Isme extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
-
-		// Load models
-		// $this->load->model('user_model','user');
 	}
 
 	function index()
