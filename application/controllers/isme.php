@@ -5,6 +5,7 @@ class Isme extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
+		log_message('error','Long =>CCCCC');
 	}
 
 	function index()
